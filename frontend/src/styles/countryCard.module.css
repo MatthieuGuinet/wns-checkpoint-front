@@ -1,0 +1,27 @@
+.countryCard {
+  border-radius: 8px;
+  border: 1px solid lightgray;
+  color: inherit;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  flex-shrink: 0;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  color: black;
+}
+
+.countryName {
+}
+
+.countryEmoji {
+}
+
+@media screen and (min-width: 720px) {
+  .countryCard {
+    width: 10%;
+  }
+}
