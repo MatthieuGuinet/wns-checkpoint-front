@@ -1,5 +1,5 @@
 import { CountriesCard } from "@/types/countriesCard.type";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { useState } from "react";
 import Header from "@/components/Header";
 import CountryCard from "@/components/Card";
@@ -18,7 +18,7 @@ export const GET_ALL_COUNTRIES = gql`
 
 export default function Home() {
   const [countries, setCountries] = useState<CountriesCard[]>([]);
-  const { loading, error, data } = useLazyQuery(GET_ALL_COUNTRIES, {
+  const { loading, error, data } = useQuery(GET_ALL_COUNTRIES, {
     onCompleted(data) {
       setCountries(data.countries);
     },
