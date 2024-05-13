@@ -1,11 +1,11 @@
 import { CountriesCard } from "@/types/countriesCard.type";
-import { gql, useQuery } from "@apollo/client";
-import { useState } from "react";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import CountryCard from "@/components/Card";
 import NewCountry from "@/components/AddCountry";
 
-export const GET_ALL_COUNTRIES = gql`
+const GET_ALL_COUNTRIES = gql`
   query Countries {
     countries {
       code
@@ -18,21 +18,32 @@ export const GET_ALL_COUNTRIES = gql`
 
 export default function Home() {
   const [countries, setCountries] = useState<CountriesCard[]>([]);
-  const { loading, error, data } = useQuery(GET_ALL_COUNTRIES, {
-    onCompleted(data) {
-      setCountries(data.countries);
-    },
-  });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error...</p>;
+  const [getCountries, { loading: loadingQuestions, error: errorQuestions }] =
+    useLazyQuery(GET_ALL_COUNTRIES);
+
+  useEffect(() => {
+    fetchCountries();
+  }, [])
+
+  if (loadingQuestions) return <p>Loading...</p>;
+  if (errorQuestions) return <p>Error...</p>;
+
+  const fetchCountries = () => {
+    getCountries({
+      fetchPolicy: "network-only",
+      onCompleted: (data) => {
+        setCountries(data.countries);
+      },
+    });
+  };
 
   return (
     <>
       <Header />
-      <NewCountry />
+      <NewCountry fetchCountries={fetchCountries} />
       <section className="countries-list">
-        {!loading &&
+        {!loadingQuestions &&
           countries.map((country) => (
             <CountryCard
               name={country.name}

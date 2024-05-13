@@ -3,7 +3,6 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import styles from "../styles/newCountry.module.css";
 import { Continent } from "@/types/continent.type";
-import { GET_ALL_COUNTRIES } from "@/pages";
 
 
 const CREATE_NEW_COUNTRY = gql`
@@ -13,7 +12,7 @@ mutation AddCountry($data: NewCountryInput!) {
     emoji
     name
     continent {
-      name
+      id
     }
   }
 }
@@ -28,7 +27,7 @@ query Continents {
 }
 `;
 
-export default function NewCountry() {
+export default function NewCountry({ fetchCountries }: { fetchCountries: () => void }) {
   const router = useRouter();
   const [createCountry] = useMutation(CREATE_NEW_COUNTRY);
   const [continents, setContinents] = useState<Continent[]>([])
@@ -48,17 +47,17 @@ export default function NewCountry() {
 
     createCountry({
       variables: {
-        country: {
+        data: {
           name: formJson.name,
           code: formJson.code,
           emoji: formJson.emoji,
           continent: {
-            code: formJson.continent
-          }
-        },
+            id: parseInt(formJson.continent as string)
+          },
+        }
       },
       onCompleted: () => {
-        GET_ALL_COUNTRIES
+        fetchCountries();
       },
     });
   };
@@ -83,7 +82,7 @@ export default function NewCountry() {
           <select name="continent" id="continent-select" className={styles.selectContinent}>
             {!loading &&
               continents.map((continent) => (
-                <option key={continent.code} value={continent.code}>{continent.name}</option>
+                <option key={continent.id} value={continent.id}>{continent.name}</option>
               ))}
           </select>
         </div>}
